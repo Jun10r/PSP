@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <servlet>
+        <servlet-name>ServletPelicula</servlet-name>
+        <servlet-class>controller.ServletPelicula</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ServletDirector</servlet-name>
+        <servlet-class>controller.ServletDirector</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ServletActor</servlet-name>
+        <servlet-class>controller.ServletActor</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ServletPelicula</servlet-name>
+        <url-pattern>/ServletPelicula</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ServletDirector</servlet-name>
+        <url-pattern>/ServletDirector</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ServletActor</servlet-name>
+        <url-pattern>/ServletActor</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+</web-app>
