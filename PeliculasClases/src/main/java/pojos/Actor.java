@@ -11,14 +11,14 @@ package pojos;
  */
 public class Actor {
     private String nombre;
-    private int edad;
+    private String apellido;
 
     public Actor() {
     }
 
-    public Actor(String nombre, int edad) {
+    public Actor(String nombre, String apellido) {
         this.nombre = nombre;
-        this.edad = edad;
+        this.apellido = apellido;
     }
 
     public String getNombre() {
@@ -29,17 +29,17 @@ public class Actor {
         this.nombre = nombre;
     }
 
-    public int getEdad() {
-        return edad;
+    public String getEdad() {
+        return apellido;
     }
 
-    public void setEdad(int edad) {
-        this.edad = edad;
+    public void setEdad(String apellido) {
+        this.apellido = apellido;
     }
 
     @Override
     public String toString() {
-        return "Actor{" + "nombre=" + nombre + ", edad=" + edad + '}';
+        return "Actor{" + "nombre=" + nombre + ", apellido=" + apellido + '}';
     }
 
 }

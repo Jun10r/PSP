@@ -6,11 +6,11 @@ package pojos;
  */
 public class Director {
     private String nombre;
-    private int edad;
+    private String apellido;
 
-    public Director(String nombre, int edad) {
+    public Director(String nombre, String apellido) {
         this.nombre = nombre;
-        this.edad = edad;
+        this.apellido = apellido;
     }
 
     public Director() {
@@ -24,17 +24,17 @@ public class Director {
         this.nombre = nombre;
     }
 
-    public int getEdad() {
-        return edad;
+    public String getApellido() {
+        return apellido;
     }
 
-    public void setEdad(int edad) {
-        this.edad = edad;
+    public void setApellido(String edad) {
+        this.apellido = edad;
     }
 
     @Override
     public String toString() {
-        return "Director{" + "nombre=" + nombre + ", edad=" + edad + '}';
+        return "Director{" + "nombre=" + nombre + ", apellido=" + apellido + '}';
     }
     
 }
