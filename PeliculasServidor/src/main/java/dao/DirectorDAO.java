@@ -13,28 +13,26 @@ import pojos.Director;
  */
 public class DirectorDAO {
 
-    public static final String INSERT_DIRECTOR = "INSERT INTO DIRECTOR (NOMBRE,EDAD) VALUES(?,?)";
+    public static final String INSERT_DIRECTOR = "INSERT INTO DIRECTOR (NOMBRE,APELLIDO) VALUES(?,?)";
     
-    public boolean insertNotes(Director n) {
+    public boolean insertDirector(Director n) {
         boolean inserted = false;
         Connection connection = null;
-        DBConnection con = new DBConnection();
+        
+        DBConnection con;
+        con = new DBConnection();
         try {
             connection = con.getConnection();
-            PreparedStatement pst = connection.prepareStatement(INSERT_NOTAS);
+            PreparedStatement pst = connection.prepareStatement(INSERT_DIRECTOR);
             pst.setString(1, n.getNombre());
-            pst.setInt(2, n.getValor());
+            pst.setString(2, n.getApellido());
             int result = pst.executeUpdate();
-            if (result != 0) {
-                inserted = true;
-            } else {
-                inserted = false;
-            }
+            inserted = result != 0;
             System.out.println("FILAS INSERTADAS: " + result);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(NotasDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DirectorDAO.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            Logger.getLogger(NotasDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DirectorDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             if (connection != null) {
                 con.cerrarConexion(connection);
@@ -42,4 +40,5 @@ public class DirectorDAO {
         }
         return inserted;
     }
+
 }

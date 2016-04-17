@@ -5,10 +5,17 @@
  */
 package services;
 
+import dao.DirectorDAO;
+import pojos.Director;
+
 /**
  *
  * @author Junior
  */
 public class ServicioDirector {
     
+    public boolean insertDirector(Director d){
+        DirectorDAO directorDAO = new DirectorDAO();
+        return directorDAO.insertDirector(d);
+    }
 }
