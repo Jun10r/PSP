@@ -11,19 +11,17 @@ package pojos;
  */
 public class Pelicula {
     private String nombre;
-    private Actor actor;
-    private Director director;
+    private String genero;
     private int calificacion;
 
     public Pelicula() {
     }
 
     
-    public Pelicula(int calificacion, String nombre, Actor actor, Director director) {
+    public Pelicula( String nombre,String genero,int calificacion) {
         this.calificacion = calificacion;
         this.nombre = nombre;
-        this.actor = actor;
-        this.director = director;
+        this.genero = genero;
     }
 
     public int getCalificacion() {
@@ -42,27 +40,20 @@ public class Pelicula {
         this.nombre = nombre;
     }
 
-    public Actor getActor() {
-        return actor;
+    public String getGenero() {
+        return genero;
     }
 
-    public void setActor(Actor actor) {
-        this.actor = actor;
-    }
-
-    public Director getDirector() {
-        return director;
-    }
-
-    public void setDirector(Director director) {
-        this.director = director;
+    public void setGenero(String genero) {
+        this.genero = genero;
     }
 
     @Override
     public String toString() {
-        return "Pelicula{" + "nombre=" + nombre + ", actor=" + actor + ", director=" + director + ", calificacion=" + calificacion + '}';
+        return "Pelicula{" + "nombre=" + nombre + ", genero=" + genero + ", calificacion=" + calificacion + '}';
     }
 
+    
    
     
     
