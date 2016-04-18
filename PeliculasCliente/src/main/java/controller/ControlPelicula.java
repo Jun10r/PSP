@@ -5,10 +5,20 @@
  */
 package controller;
 
+import daw.PeliculaDAO;
+import java.util.ArrayList;
+import org.apache.http.impl.client.CloseableHttpClient;
+import pojos.Pelicula;
+
 /**
  *
  * @author Junior
  */
 public class ControlPelicula {
-    
+    public ArrayList<Pelicula> getAllPeliculas(CloseableHttpClient httpclient){
+        ArrayList<Pelicula> peliculas = null;
+        PeliculaDAO peliculasDAO = new PeliculaDAO();
+        peliculas = peliculasDAO.getAllPeliculas(httpclient);
+        return peliculas;
+    }
 }

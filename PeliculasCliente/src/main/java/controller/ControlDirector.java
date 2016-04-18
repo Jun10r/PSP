@@ -5,10 +5,17 @@
  */
 package controller;
 
+import daw.DirectorDAO;
+import pojos.Director;
+
 /**
  *
  * @author Junior
  */
 public class ControlDirector {
     
+    public boolean insert(Director d){
+        DirectorDAO directorDAO = new DirectorDAO();
+        return directorDAO.insertDirector(d);
+    }
 }
