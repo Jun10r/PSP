@@ -1,4 +1,4 @@
-package dao;
+package daos;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,9 +29,9 @@ public class DirectorDAO {
             int result = pst.executeUpdate();
             inserted = result != 0;
             System.out.println("FILAS INSERTADAS: " + result);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(DirectorDAO.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
+            Logger.getLogger(DirectorDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
             Logger.getLogger(DirectorDAO.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             if (connection != null) {

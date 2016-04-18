@@ -5,10 +5,20 @@
  */
 package services;
 
+import daos.PeliculaDAO;
+import java.util.ArrayList;
+import pojos.Pelicula;
+
 /**
  *
  * @author Junior
  */
 public class ServicioPelicula {
     
+    public ArrayList<Pelicula> getAllPeliculas(){
+        ArrayList<Pelicula> peliculas = null;
+        PeliculaDAO pelisDAO = new PeliculaDAO();
+        peliculas = pelisDAO.getAllPeliculas();
+        return peliculas;
+    }
 }

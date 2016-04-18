@@ -5,7 +5,7 @@
  */
 package services;
 
-import dao.DirectorDAO;
+import daos.DirectorDAO;
 import pojos.Director;
 
 /**

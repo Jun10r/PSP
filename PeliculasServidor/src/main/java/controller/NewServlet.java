@@ -1,30 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import config.Configuration;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.codec.binary.Base64;
-import pojos.Director;
-import services.ServicioDirector;
-import utilidades.PasswordHash;
 
 /**
  *
  * @author Junior
  */
-public class ServletDirector extends HttpServlet {
+@WebServlet(name = "NewServlet", urlPatterns = {"/NewServlet"})
+public class NewServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,38 +28,21 @@ public class ServletDirector extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        /*if(getSesion().getAtribute("clave","valor")){
-        }else{
-            fordward(); error
-        };*/
-        
-        
-        ServicioDirector sd = new ServicioDirector();
-        String op = request.getParameter("op");
-        // Director d = new Director("junior", "Lizama");
-        if (op != null) {
-            switch (op) {
-                case "insert":
-                    try {
-                        ObjectMapper mapinsert = new ObjectMapper();
-                        byte[] b64a = Base64.decodeBase64(request.getParameter("userInsert").getBytes("UTF-8"));
-                        Director d;
-                        d = mapinsert.readValue(
-                                PasswordHash.descifra(b64a, "clave"),
-                                new TypeReference<Director>() {
-                        });
-                        if (sd.insertDirector(d)) {
-                            response.getWriter().print("TRUE");
-                        }
-                    } catch (Exception ex) {
-                        Logger.getLogger(ServletDirector.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    
-
-            }
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet NewServlet</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println("HOlaaa");
+            String url = Configuration.getInstance().getDburl();
+                  out.println("<h1>Servlet NewServlet at " + url+ "</h1>");
+            out.println("</body>");
+            out.println("</html>");
         }
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
