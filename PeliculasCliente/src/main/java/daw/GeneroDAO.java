@@ -6,7 +6,6 @@
 package daw;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,29 +17,31 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
-import pojos.Pelicula;
-import static utilidades.ConstantesClaves.CLAVE_PELICULAS;
+import pojos.Actor;
+import pojos.Genero;
+import utilidades.ConstantesClaves;
+import static utilidades.ConstantesClaves.CLAVE_GENEROS;
 import utilidades.PasswordHash;
 
 /**
  *
  * @author Junior
  */
-public class PeliculaDAO {
-
-    public ArrayList<Pelicula> getAllPeliculas(CloseableHttpClient httpclient) {
-        ArrayList<Pelicula> peliculas = null;
+public class GeneroDAO {
+    public ArrayList<Genero> getGeneroByMovie(CloseableHttpClient httpclient,int codRef) {
+        ArrayList<Genero> actores = null;
         CloseableHttpResponse response = null;
         try {
-            HttpGet httpGet = new HttpGet("http://localhost:8080/PeliculasServidor/ServletPelicula?op=get");
+            HttpGet httpGet = new HttpGet("http://localhost:8080/PeliculasServidor/ServletGenero?op=getGenero&codRef="+codRef);
             response = httpclient.execute(httpGet);
+            //Si da OK 200  es que todo ha ido bien
             System.out.println("ESTADO: " + response.getStatusLine());
             HttpEntity entity = response.getEntity();
             String c = EntityUtils.toString(entity);
             //Desencriptando
             ObjectMapper mapper = new ObjectMapper();
             byte[] b64p = Base64.decodeBase64(c);
-            peliculas = mapper.readValue(PasswordHash.descifra(b64p, CLAVE_PELICULAS), new TypeReference<ArrayList<Pelicula>>() {
+            actores = mapper.readValue(PasswordHash.descifra(b64p, CLAVE_GENEROS), new TypeReference<ArrayList<Genero>>() {
             });
         } catch (Exception e) {
         } finally {
@@ -52,7 +53,6 @@ public class PeliculaDAO {
                 }
             }
         }
-        return peliculas;
+        return actores;
     }
-
 }

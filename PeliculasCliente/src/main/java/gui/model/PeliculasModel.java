@@ -3,11 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gui;
+package gui.model;
 
 import static constantes.Constantes.COUNT_COLUMN_PELICULAS;
 import controller.ControlPelicula;
+import java.awt.Button;
 import java.util.ArrayList;
+import javax.swing.JButton;
 import javax.swing.table.AbstractTableModel;
 import org.apache.http.impl.client.CloseableHttpClient;
 import pojos.Pelicula;
@@ -40,17 +42,27 @@ public class PeliculasModel extends AbstractTableModel {
         return COUNT_COLUMN_PELICULAS;
     }
 
+    @Override
     public String getColumnName(int i) {
         String columnName = "";
         switch (i) {
             case 0:
-                columnName = "NOMBRE";
+                columnName = "N_REFERENCIA";
                 break;
             case 1:
-                columnName = "GENERO";
+                columnName = "TITULO";
                 break;
             case 2:
                 columnName = "CALIFICACION";
+                break;
+            case 3:
+                columnName = "DIRECTOR";
+                break;
+            case 4:
+                columnName = "ACTORES";
+                break;
+            case 5:
+                columnName="GENERO";
                 break;
         }
         return columnName;
@@ -62,13 +74,22 @@ public class PeliculasModel extends AbstractTableModel {
         Object o = new Object();
         switch (columnIndex) {
             case 0:
-                o = pelis.getNombre();
+                o = pelis.getN_referencia();
                 break;
             case 1:
-                o = pelis.getGenero();
+                o = pelis.getTitulo();
                 break;
             case 2:
                 o = pelis.getCalificacion();
+                break;
+            case 3:
+                o = pelis.getCod_director();
+                break;
+            case 4:
+                o = "Actores";
+                break;
+            case 5:
+                o= "Generos";
                 break;
         }
         return o;
@@ -81,16 +102,24 @@ public class PeliculasModel extends AbstractTableModel {
 
         switch (columnIndex) {
             case 0:
-                p.setNombre((String) o);
+                p.setN_referencia(Integer.parseInt((String) o));
                 break;
             case 1:
-                p.setGenero((String) o);
+                p.setTitulo((String) o);
                 break;
             case 2:
                 p.setCalificacion(Integer.parseInt((String) o));
+                break;
+            case 3:
+                p.setCod_director(Integer.parseInt((String) o));
                 break;
         }
         fireTableCellUpdated(rowIndex, columnIndex);
     }
 
+    @Override
+    public boolean isCellEditable(int row, int column) {
+        // Sobrescribimos este método para evitar que la columna que contiene los botones sea editada.
+        return !(this.getColumnClass(column).equals(JButton.class));
+    }
 }
