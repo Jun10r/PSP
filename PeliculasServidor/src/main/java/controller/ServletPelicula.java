@@ -8,11 +8,19 @@ package controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.codec.binary.Base64;
+import pojos.Pelicula;
 import services.ServicioPelicula;
+import utilidades.ConstantesClaves;
+import static utilidades.ConstantesClaves.CLAVE_PELICULAS;
+import utilidades.PasswordHash;
 
 /**
  *
@@ -33,16 +41,22 @@ public class ServletPelicula extends HttpServlet {
             throws ServletException, IOException {
         String op = request.getParameter("op");
         ServicioPelicula sp = new ServicioPelicula();
-        
-        switch(op){
-            case "get":
-                try {
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.writeValue(response.getOutputStream(), sp.getAllPeliculas());
-            } catch (IOException ex) {
-
+        if (op != null) {
+            switch (op) {
+                case "get":
+                    try {
+                        ObjectMapper mapper = new ObjectMapper();
+                        String peliculasJson = mapper.writeValueAsString(sp.getAllPeliculas());
+                        byte[] bytes = PasswordHash.cifra(peliculasJson, CLAVE_PELICULAS);
+                        String peliculaBase64 = new String(Base64.encodeBase64(bytes));
+                        mapper.writeValue(response.getOutputStream(), peliculaBase64);
+                    } catch (IOException ex) {
+                    } catch (Exception ex) {
+                        Logger.getLogger(ServletPelicula.class.getName()).log(Level.SEVERE, null, ex);
+                    }
             }
         }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

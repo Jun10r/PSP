@@ -33,10 +33,11 @@ public class PeliculaDAO {
             ResultSet rs = stmt.executeQuery(SELECT_ALL_PELICULAS);
 
             while (rs.next()) {
-                String nombre = rs.getString("NOMBRE");
-                String genero = rs.getString("GENERO");
+                int n_referencia = rs.getInt("N_REFERENCIA");
+                String titulo = rs.getString("TITULO");
                 int calificacion = rs.getInt("CALIFICACION");
-                Pelicula p = new Pelicula(nombre, genero, calificacion);
+                int cod_director = rs.getInt("DIRECTOR");
+                Pelicula p = new Pelicula(n_referencia, titulo, calificacion,cod_director);
                 pelis.add(p);
             }
         } catch (ClassNotFoundException ex) {

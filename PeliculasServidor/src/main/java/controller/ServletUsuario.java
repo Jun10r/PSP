@@ -5,25 +5,33 @@
  */
 package controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Base64;
-import services.ServicioActor;
-import static utilidades.ConstantesClaves.CLAVE_ACTORES;
+import pojos.Usuario;
+import services.ServicioUsuario;
+import utilidades.ConstantesClaves;
+import static utilidades.ConstantesClaves.CLAVE_LOGIN;
+import static utilidades.ConstantesClaves.CLAVE_REGISTRO;
+import static utilidades.ConstantesClaves.PARAMETRO_POST;
 import utilidades.PasswordHash;
 
 /**
  *
  * @author Junior
  */
-public class ServletActor extends HttpServlet {
+@WebServlet(name = "ServletUsuario", urlPatterns = {"/ServletUsuario"})
+public class ServletUsuario extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,42 +45,59 @@ public class ServletActor extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String op = request.getParameter("op");
-        ServicioActor sa = new ServicioActor();
+        ServicioUsuario sv = new ServicioUsuario();
+
         if (op != null) {
             switch (op) {
-                case "get":
-                    try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        String peliculasJson = mapper.writeValueAsString(sa.getAllActors());
-                        byte[] bytes = PasswordHash.cifra(peliculasJson, "claveActores");
-                        String peliculaBase64 = new String(Base64.encodeBase64(bytes));
-                        mapper.writeValue(response.getOutputStream(), peliculaBase64);
-                    } catch (IOException ex) {
+                case "login":
 
+                    ObjectMapper mapLogin = new ObjectMapper();
+                    byte[] usuarioB64 = Base64.decodeBase64(request.getParameter(PARAMETRO_POST).getBytes("UTF-8"));
+                    try {
+                        Usuario u = mapLogin.readValue(
+                                PasswordHash.descifra(usuarioB64, CLAVE_LOGIN),
+                                new TypeReference<Usuario>() {
+                        });
+
+                        Usuario userBD = sv.loginUser(u); // Usuario de Base de Datos
+
+                        boolean validated = PasswordHash.validatePassword(u.getPassword(), userBD.getPassword());
+                        if (validated) {
+                            HttpSession sesion = request.getSession();
+                            sesion.setAttribute("login", "OK");
+                            response.getWriter().print("TRUE");
+                        } else {
+                            HttpSession sesion = request.getSession();
+                            sesion.setAttribute("login", "FALSE");
+                            response.getWriter().print("FALSE");
+                        }
                     } catch (Exception ex) {
-                        Logger.getLogger(ServletPelicula.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(ServletUsuario.class.getName()).log(Level.SEVERE, null, ex);
                     }
+
                     break;
-                     case "getMovie":
-                         String codRef = request.getParameter("codRef");
+                case "registra":
+                    ObjectMapper mapper = new ObjectMapper();
+                    byte[] b64 = Base64.decodeBase64(request.getParameter(PARAMETRO_POST).getBytes("UTF-8"));
                     try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        String peliculasJson = mapper.writeValueAsString(sa.getAllActorsByMovie(Integer.parseInt(codRef)));
-                        byte[] bytes = PasswordHash.cifra(peliculasJson, CLAVE_ACTORES);
-                        String peliculaBase64 = new String(Base64.encodeBase64(bytes));
-                        mapper.writeValue(response.getOutputStream(), peliculaBase64);
-                    
-                    } catch (IOException ex) {
+                        Usuario u = mapper.readValue(
+                                PasswordHash.descifra(b64, CLAVE_REGISTRO),
+                                new TypeReference<Usuario>() {
+                        });
+                        u.setPassword(PasswordHash.createHash(u.getPassword()));
+                        if (sv.insertUser(u)) {
+                            response.getWriter().print("OK");
+                        }
 
                     } catch (Exception ex) {
-                        Logger.getLogger(ServletPelicula.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(ServletUsuario.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     break;
             }
         }
     }
 
-// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
