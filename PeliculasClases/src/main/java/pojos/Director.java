@@ -5,15 +5,23 @@ package pojos;
  * @author Junior
  */
 public class Director {
+    private int dni;
     private String nombre;
-    private String apellido;
 
-    public Director(String nombre, String apellido) {
+    public Director(int dni, String nombre) {
+        this.dni = dni;
         this.nombre = nombre;
-        this.apellido = apellido;
     }
 
     public Director() {
+    }
+
+    public int getDni() {
+        return dni;
+    }
+
+    public void setDni(int dni) {
+        this.dni = dni;
     }
 
     public String getNombre() {
@@ -24,17 +32,9 @@ public class Director {
         this.nombre = nombre;
     }
 
-    public String getApellido() {
-        return apellido;
-    }
-
-    public void setApellido(String edad) {
-        this.apellido = edad;
-    }
-
     @Override
     public String toString() {
-        return "Director{" + "nombre=" + nombre + ", apellido=" + apellido + '}';
+        return "Director{" + "DNI=" + dni + ", Nombre=" + nombre + '}';
     }
     
 }

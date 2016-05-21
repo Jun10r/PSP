@@ -9,24 +9,25 @@ package pojos;
  *
  * @author Junior
  */
-public class Actor {
-    private int dni;
+public class Genero {
+    private int id ;
     private String nombre;
 
-    public Actor() {
+    public Genero() {
     }
 
-    public Actor(int dni, String nombre) {
-        this.dni = dni;
+    
+    public Genero(int id, String nombre) {
+        this.id = id;
         this.nombre = nombre;
     }
 
-    public int getDni() {
-        return dni;
+    public int getId() {
+        return id;
     }
 
-    public void setDni(int dni) {
-        this.dni = dni;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getNombre() {
@@ -39,7 +40,7 @@ public class Actor {
 
     @Override
     public String toString() {
-        return "Actor{" + "dni=" + dni + ", nombre=" + nombre + '}';
+        return "Genero{" + "id=" + id + ", nombre=" + nombre + '}';
     }
-
+    
 }

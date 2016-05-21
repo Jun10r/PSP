@@ -10,18 +10,35 @@ package pojos;
  * @author Junior
  */
 public class Pelicula {
-    private String nombre;
-    private String genero;
+    private int n_referencia;
+    private String titulo;
     private int calificacion;
+    private int cod_director;
 
     public Pelicula() {
     }
 
-    
-    public Pelicula( String nombre,String genero,int calificacion) {
+    public Pelicula(int n_referencia, String titulo, int calificacion, int cod_director) {
+        this.n_referencia = n_referencia;
+        this.titulo = titulo;
         this.calificacion = calificacion;
-        this.nombre = nombre;
-        this.genero = genero;
+        this.cod_director = cod_director;
+    }
+
+    public int getN_referencia() {
+        return n_referencia;
+    }
+
+    public void setN_referencia(int n_referencia) {
+        this.n_referencia = n_referencia;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
 
     public int getCalificacion() {
@@ -32,27 +49,20 @@ public class Pelicula {
         this.calificacion = calificacion;
     }
 
-    public String getNombre() {
-        return nombre;
+    public int getCod_director() {
+        return cod_director;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getGenero() {
-        return genero;
-    }
-
-    public void setGenero(String genero) {
-        this.genero = genero;
+    public void setCod_director(int cod_director) {
+        this.cod_director = cod_director;
     }
 
     @Override
     public String toString() {
-        return "Pelicula{" + "nombre=" + nombre + ", genero=" + genero + ", calificacion=" + calificacion + '}';
+        return "Pelicula{" + "n_referencia=" + n_referencia + ", titulo=" + titulo + ", calificacion=" + calificacion + ", cod_director=" + cod_director + '}';
     }
 
+ 
     
    
     
