@@ -6,6 +6,7 @@
 package controller;
 
 import daw.UsuariosDAO;
+import org.apache.http.impl.client.CloseableHttpClient;
 import pojos.Usuario;
 
 
@@ -15,13 +16,13 @@ import pojos.Usuario;
  */
 public class ControlUsuario {
 
-    public boolean insertUser(Usuario u ) {
+    public boolean insertUser(Usuario u , CloseableHttpClient httpclient) {
         UsuariosDAO dao = new UsuariosDAO();
-        return dao.insertUser(u);
+        return dao.insertUser(u,httpclient);
     }
 
-    public boolean login(Usuario u) {
+    public boolean login(Usuario u,CloseableHttpClient httpclient) {
         UsuariosDAO dao = new UsuariosDAO();
-        return dao.login(u);
+        return dao.login(u,httpclient);
     }
 }

@@ -15,17 +15,42 @@ import pojos.Actor;
  * @author Junior
  */
 public class ControlActor {
-    
-    public ArrayList<Actor> getActorsByMovie(CloseableHttpClient httpclient,int codRef){
+
+    private ActorDAO actoresDAO;
+
+    public ControlActor() {
+        actoresDAO = new ActorDAO();
+    }
+
+    public Actor getActor(CloseableHttpClient httpclient, String name) {
+        Actor actor = actoresDAO.getActor(httpclient, name);
+        return actor;
+    }
+
+    public ArrayList<Actor> getActorsByMovie(CloseableHttpClient httpclient, int codRef) {
         ArrayList<Actor> actores = null;
-        ActorDAO actoresDAO = new ActorDAO();
-        actores = actoresDAO.getActorsByMovie(httpclient,codRef);
+        actores = actoresDAO.getActorsByMovie(httpclient, codRef);
         return actores;
     }
-    public ArrayList<Actor> getAllActors(CloseableHttpClient httpclient){
+
+    public ArrayList<Actor> getAllActors(CloseableHttpClient httpclient) {
         ArrayList<Actor> actores = null;
-        ActorDAO actoresDAO = new ActorDAO();
         actores = actoresDAO.getAllActors(httpclient);
         return actores;
+    }
+
+    public void update(Actor a, CloseableHttpClient httpclient) {
+        actoresDAO.updateActores(a, httpclient);
+    }
+
+    public boolean inserted(Actor a, CloseableHttpClient httpclient) {
+        return actoresDAO.insertActores(a, httpclient);
+    }
+    public boolean insertActuan(Actor a, int id,CloseableHttpClient httpclient){
+        return actoresDAO.insertActuan(a, id, httpclient);
+    }
+
+    public void delete(int a, CloseableHttpClient httpclient) {
+        actoresDAO.deleteActores(a, httpclient);
     }
 }

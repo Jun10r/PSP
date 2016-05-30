@@ -1,0 +1,212 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package gui;
+
+import static constantes.Constantes.COLUMN_DNI_DIRECTORES;
+import static constantes.Constantes.COLUMN_NOMBRE_DIRECTORES;
+import controller.ControlDirector;
+import gui.model.DirectoresModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import org.apache.http.impl.client.CloseableHttpClient;
+import pojos.Director;
+
+/**
+ *
+ * @author Junior
+ */
+public class jDialogDirector extends javax.swing.JDialog {
+
+    /**
+     * Creates new form jDialogDirector
+     */
+    public static int refPelicula;
+    public ControlDirector control;
+     static CloseableHttpClient httpclient;
+
+    public jDialogDirector(java.awt.Frame parent, boolean modal, CloseableHttpClient httpclient) {
+        super(parent, modal);
+        initComponents();
+        this.httpclient = httpclient;
+        showDirectores();
+    }
+    
+     public jDialogDirector(java.awt.Frame parent, boolean modal, CloseableHttpClient httpclient,int codRef) {
+        super(parent, modal);
+        initComponents();
+        this.httpclient = httpclient;
+        this.refPelicula = codRef;
+        control = new ControlDirector();
+        showDirectoresByMovie();
+    }
+
+     
+      public void datosDirectores(DirectoresModel model, TableModelEvent e) {
+        if (((DirectoresModel) jTable1.getModel()).isInsertando()) {
+            ((DirectoresModel) jTable1.getModel()).insert_true(
+                    (Integer) jTable1.getModel().getValueAt(e.getFirstRow(), COLUMN_DNI_DIRECTORES),
+                    (String) jTable1.getModel().getValueAt(e.getFirstRow(), COLUMN_NOMBRE_DIRECTORES));
+
+            if (!((DirectoresModel) jTable1.getModel()).isInsertando()) {
+                Director p = ((DirectoresModel) jTable1.getModel()).getDirectoresAtRow(e.getFirstRow());
+
+                boolean inserted = control.inserted(p, refPelicula, httpclient);
+                ((DirectoresModel) jTable1.getModel()).setActoresLasId(p);
+                if (inserted) {
+                    System.out.println("INSERTADOO");
+                }
+            }
+        } else {
+            Director p = ((DirectoresModel) jTable1.getModel()).getDirectoresAtRow(e.getFirstRow());
+            control.update(p, httpclient);
+        }
+        System.out.println("U" + e.getColumn() + " " + e.getFirstRow());
+        System.out.println("valor " + jTable1.getModel().getValueAt(e.getFirstRow(), e.getColumn()));
+        Director p = ((DirectoresModel) jTable1.getModel()).getDirectoresAtRow(e.getFirstRow());
+        control.update(p, httpclient);
+    }
+       public void showDirectoresByMovie() {
+        DirectoresModel model = new DirectoresModel(httpclient, refPelicula);
+        model.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                switch (e.getType()) {
+                    case TableModelEvent.INSERT:
+
+                        System.out.println("I" + e.getColumn() + " " + e.getFirstRow());
+                        break;
+                    case TableModelEvent.UPDATE:
+
+                        System.out.println("U " + e.getColumn() + " " + e.getFirstRow());
+                        
+                        datosDirectores(model, e);
+                        break;
+                    case TableModelEvent.DELETE:
+                        System.out.println("D" + e.getColumn() + " " + e.getFirstRow());
+                        break;
+                }
+            }
+        });
+        jTable1.setModel(model);
+        //rellenarCombo();
+    }
+
+    public void showDirectores() {
+        DirectoresModel model = new DirectoresModel(httpclient);
+        model.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                switch (e.getType()) {
+                    case TableModelEvent.INSERT:
+
+                        System.out.println("I" + e.getColumn() + " " + e.getFirstRow());
+                        break;
+                    case TableModelEvent.UPDATE:
+                        System.out.println("U " + e.getColumn() + " " + e.getFirstRow());
+                        System.out.println("ESTOY EN ACTORES GENERAL");
+                        datosDirectores(model, e);
+                        break;
+                    case TableModelEvent.DELETE:
+                        System.out.println("D" + e.getColumn() + " " + e.getFirstRow());
+                        break;
+                }
+            }
+        });
+        jTable1.setModel(model);
+    }
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(15, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 25, Short.MAX_VALUE))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(jDialogDirector.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(jDialogDirector.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(jDialogDirector.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(jDialogDirector.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the dialog */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                jDialogDirector dialog = new jDialogDirector(new javax.swing.JFrame(), true,httpclient);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
+    // End of variables declaration//GEN-END:variables
+}

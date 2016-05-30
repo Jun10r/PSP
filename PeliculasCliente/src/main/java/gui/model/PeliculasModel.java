@@ -21,15 +21,60 @@ import pojos.Pelicula;
 public class PeliculasModel extends AbstractTableModel {
 
     private ArrayList<Pelicula> peliculas;
+    private boolean insertando = false;
+    private final ControlPelicula cp;
 
     public PeliculasModel(CloseableHttpClient httpclient) {
         super();
-        ControlPelicula cp = new ControlPelicula();
+        cp = new ControlPelicula();
         peliculas = cp.getAllPeliculas(httpclient);
+    }
+
+    public boolean isInsertando() {
+        return insertando;
+    }
+
+    public void insertRow() {
+       
+        peliculas.add(new Pelicula(-1, "", 1));
+        fireTableRowsInserted(peliculas.size() - 1, peliculas.size() - 1);
+        insertando = true;
+    }
+
+    public void insert_true(String titulo, int calificacion ) {
+        if (insertando) {
+            if (!titulo.isEmpty() && calificacion != 0) {
+                insertando = false;
+            }
+        }
+        fireTableRowsInserted(peliculas.size() - 1, peliculas.size() - 1);
+    }
+
+    public void setPeliculaLastId(Pelicula l) {
+        peliculas.remove(peliculas.size() - 1);
+        peliculas.add(l);
     }
 
     public Pelicula getPeliculasAtRow(int row) {
         return peliculas.get(row);
+    }
+
+    //ELIMINAR PELICULA
+    public void deletePelicula(int p) {
+        peliculas.remove(p);
+        fireTableDataChanged();
+    }
+
+    public void deleteRow(int p) {
+        peliculas.remove(p);
+    }
+
+    public ArrayList<Pelicula> getPeliculas() {
+        return peliculas;
+    }
+
+    public void setPeliculas(ArrayList<Pelicula> peliculas) {
+        this.peliculas = peliculas;
     }
 
     @Override
@@ -62,7 +107,7 @@ public class PeliculasModel extends AbstractTableModel {
                 columnName = "ACTORES";
                 break;
             case 5:
-                columnName="GENERO";
+                columnName = "GENERO";
                 break;
         }
         return columnName;
@@ -83,13 +128,13 @@ public class PeliculasModel extends AbstractTableModel {
                 o = pelis.getCalificacion();
                 break;
             case 3:
-                o = pelis.getCod_director();
+                o = "Directores";
                 break;
             case 4:
                 o = "Actores";
                 break;
             case 5:
-                o= "Generos";
+                o = "Generos";
                 break;
         }
         return o;
@@ -102,16 +147,13 @@ public class PeliculasModel extends AbstractTableModel {
 
         switch (columnIndex) {
             case 0:
-                p.setN_referencia(Integer.parseInt((String) o));
+                p.setN_referencia((Integer) o);
                 break;
             case 1:
                 p.setTitulo((String) o);
                 break;
             case 2:
                 p.setCalificacion(Integer.parseInt((String) o));
-                break;
-            case 3:
-                p.setCod_director(Integer.parseInt((String) o));
                 break;
         }
         fireTableCellUpdated(rowIndex, columnIndex);

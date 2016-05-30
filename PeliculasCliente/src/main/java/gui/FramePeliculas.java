@@ -7,16 +7,17 @@ package gui;
 
 import gui.model.PeliculasModel;
 import constantes.Constantes;
+import static constantes.Constantes.COLUMN_ACTORES_PELICULA;
+import static constantes.Constantes.COLUMN_DIRECTOR_PELICULA;
 import static constantes.Constantes.COLUMN_GENERO_PELICULA;
 import controller.ButtonColumn;
 
 import controller.ControlDirector;
 import controller.ControlPelicula;
 import controller.ControlUsuario;
-import controller.jDialogActor;
-import controller.jDialogGenero;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import javafx.scene.AccessibleAttribute;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -46,16 +47,20 @@ public class FramePeliculas extends javax.swing.JFrame {
     ControlUsuario controlUser;
     private jDialogActor dialogActores;
     private jDialogGenero dialogGenero;
+    private jDialogDirector dialogDirectores;
     CloseableHttpClient httpclient;
     private int idReferencia;
 
     public FramePeliculas() {
         initComponents();
+        httpclient = HttpClients.createDefault();
         ctrlPeliculas = new ControlPelicula();
         ctrlDirector = new ControlDirector();
         controlUser = new ControlUsuario();
         panelVisible(jPanelLogin);
         //datosPeliculas();
+        jMenuAccionesActores.setVisible(false);
+
     }
 
     public void datosPeliculas() {
@@ -69,37 +74,36 @@ public class FramePeliculas extends javax.swing.JFrame {
                         System.out.println("I" + e.getColumn() + " " + e.getFirstRow());
                         break;
                     case TableModelEvent.UPDATE:
-                        /*
-                        if (((ClientesModel) jTable1.getModel()).isInsertando()) {
-                            ((ClientesModel) jTable1.getModel()).checkInsert(
-                                    (String) jTable1.getModel().getValueAt(e.getFirstRow(), Constantes.COLUMN_NOMBRE_CLIENTE),
-                                    (String) jTable1.getModel().getValueAt(e.getFirstRow(), Constantes.COLUMN_APELLIDO_CLIENTE),
-                                    (Integer) jTable1.getModel().getValueAt(e.getFirstRow(), Constantes.COLUMN_EDAD_CLIENTE),
-                                    (Date) jTable1.getModel().getValueAt(e.getFirstRow(), Constantes.COLUMN_DATE_CLIENTE));
 
-                            if (!((ClientesModel) jTable1.getModel()).isInsertando()) {
-                                Cliente c = ((ClientesModel) jTable1.getModel()).getClienteAtRow(e.getFirstRow());
+                        if (((PeliculasModel) jTablePeliculas.getModel()).isInsertando()) {
+                            ((PeliculasModel) jTablePeliculas.getModel()).insert_true(
+                                    (String) jTablePeliculas.getModel().getValueAt(e.getFirstRow(), Constantes.COLUMN_TITULO_PELICULA),
+                                    (Integer) jTablePeliculas.getModel().getValueAt(e.getFirstRow(), Constantes.COLUMN_CALIFICACION_PELICULA)
+                            );
 
-                                boolean inserted = controlClient.insertClient(c, httpclient);
-                                ((ClientesModel) jTable1.getModel()).setClienteLastId(c);
-                                if (inserted) {
-                                    System.out.println("INSERTADOO");
-                                }
+                            if (!((PeliculasModel) jTablePeliculas.getModel()).isInsertando()) {
+                                Pelicula p = ((PeliculasModel) jTablePeliculas.getModel()).getPeliculasAtRow(e.getFirstRow());
+
+                                int id = ctrlPeliculas.inserted(p, httpclient);
+                                int fila = jTablePeliculas.getSelectedRow();
+                                jTablePeliculas.getModel().setValueAt(id, fila, Constantes.COLUMN_REFERENCIA_PELICULA);
+                                jTablePeliculas.updateUI();
+                                //((PeliculasModel) jTablePeliculas.getModel()).setPeliculaLastId(p);
+
                             }
                         } else {
-                            Cliente c = ((ClientesModel) jTable1.getModel()).getClienteAtRow(e.getFirstRow());
-                            controlClient.updateCliente(c, httpclient);
+                            Pelicula p = ((PeliculasModel) jTablePeliculas.getModel()).getPeliculasAtRow(e.getFirstRow());
+                            ctrlPeliculas.update(p, httpclient);
+                            jTablePeliculas.updateUI();
                         }
-                        /*
+/*
                         System.out.println("U" + e.getColumn() + " " + e.getFirstRow());
-                        System.out.println("valor " + jTable1.getModel().getValueAt(e.getFirstRow(), e.getColumn()));
-                        
-                            Cliente c = ((ClientesModel) jTable1.getModel()).getClienteAtRow(e.getFirstRow());
-                            controlClient.updateCliente(c, httpclient);
-                        
+                        System.out.println("valor " + jTablePeliculas.getModel().getValueAt(e.getFirstRow(), e.getColumn()));
 
+                        Pelicula p = ((PeliculasModel) jTablePeliculas.getModel()).getPeliculasAtRow(e.getFirstRow());
+                        ctrlPeliculas.update(p, httpclient);
+*/
                         //Cambiar tipo de datos
-                         */
                         break;
                     case TableModelEvent.DELETE:
 
@@ -110,9 +114,11 @@ public class FramePeliculas extends javax.swing.JFrame {
         });
         jTablePeliculas.setModel(model);
 
-        ButtonColumn botonActores = new ButtonColumn(jTablePeliculas, verActores(), Constantes.COLUMN_ACTORES_PELICULA);
+        ButtonColumn botonActores = new ButtonColumn(jTablePeliculas, verActores(), COLUMN_ACTORES_PELICULA);
         ButtonColumn botonGenero = new ButtonColumn(jTablePeliculas, verGeneroByMovie(), COLUMN_GENERO_PELICULA);
-        // botonActores.setMnemonic(KeyEvent.VK_D);
+        ButtonColumn botonDirectores= new ButtonColumn(jTablePeliculas, verDirectores(), COLUMN_DIRECTOR_PELICULA);
+        
+         botonActores.setMnemonic(KeyEvent.VK_D);
 
     }
 
@@ -124,6 +130,19 @@ public class FramePeliculas extends javax.swing.JFrame {
                 System.out.println("PELICULA: " + pelicula.getTitulo());
                 dialogActores = new jDialogActor(null, true, httpclient, pelicula.getN_referencia());
                 dialogActores.setVisible(true);
+            }
+        };
+        return action;
+    }
+    public Action verDirectores() {
+        Action action = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = jTablePeliculas.getSelectedRow();
+                Pelicula pelicula = ((PeliculasModel) jTablePeliculas.getModel()).getPeliculasAtRow(row);
+                System.out.println("PELICULA: " + pelicula.getTitulo());
+                dialogDirectores = new jDialogDirector(null, true, httpclient, pelicula.getN_referencia());
+                dialogDirectores.setVisible(true);
             }
         };
         return action;
@@ -157,6 +176,8 @@ public class FramePeliculas extends javax.swing.JFrame {
         jPanelPeliculas = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTablePeliculas = new javax.swing.JTable();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
         jPanelAltas = new javax.swing.JPanel();
         jTextName = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
@@ -174,14 +195,8 @@ public class FramePeliculas extends javax.swing.JFrame {
         jButtonLogin = new javax.swing.JButton();
         jButtonRegistro = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenuPelicula = new javax.swing.JMenu();
-        jMenuInsert = new javax.swing.JMenuItem();
-        jMenuUpdate = new javax.swing.JMenuItem();
-        jMenuDelete = new javax.swing.JMenuItem();
-        jMenuExtras = new javax.swing.JMenu();
-        jMenuAlta = new javax.swing.JMenuItem();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuAccionesActores = new javax.swing.JMenu();
+        jMenuVerActores = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(500, 500));
@@ -208,21 +223,46 @@ public class FramePeliculas extends javax.swing.JFrame {
         jTablePeliculas.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jScrollPane1.setViewportView(jTablePeliculas);
 
+        jButton3.setText("Insertar");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        jButton4.setText("Borrar");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanelPeliculasLayout = new javax.swing.GroupLayout(jPanelPeliculas);
         jPanelPeliculas.setLayout(jPanelPeliculasLayout);
         jPanelPeliculasLayout.setHorizontalGroup(
             jPanelPeliculasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelPeliculasLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 619, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanelPeliculasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanelPeliculasLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 619, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanelPeliculasLayout.createSequentialGroup()
+                        .addGap(48, 48, 48)
+                        .addComponent(jButton3)
+                        .addGap(29, 29, 29)
+                        .addComponent(jButton4)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanelPeliculasLayout.setVerticalGroup(
             jPanelPeliculasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanelPeliculasLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 371, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanelPeliculasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton3)
+                    .addComponent(jButton4))
+                .addContainerGap(88, Short.MAX_VALUE))
         );
 
         jPanelAltas.setName("jPanelAltas"); // NOI18N
@@ -379,37 +419,17 @@ public class FramePeliculas extends javax.swing.JFrame {
                 .addContainerGap(49, Short.MAX_VALUE))
         );
 
-        jMenuPelicula.setText("Acciones Pelicula");
+        jMenuAccionesActores.setText("Acciones Actores");
 
-        jMenuInsert.setText("Insertar Pelicula");
-        jMenuPelicula.add(jMenuInsert);
-
-        jMenuUpdate.setText("Actualizar Pelicula");
-        jMenuPelicula.add(jMenuUpdate);
-
-        jMenuDelete.setText("Eliminar Pelicula");
-        jMenuPelicula.add(jMenuDelete);
-
-        jMenuBar1.add(jMenuPelicula);
-
-        jMenuExtras.setText("Extras");
-
-        jMenuAlta.setText("Alta Director/Actor");
-        jMenuExtras.add(jMenuAlta);
-
-        jMenuBar1.add(jMenuExtras);
-
-        jMenu1.setText("Acciones Actores");
-
-        jMenuItem1.setText("Ver Actores");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        jMenuVerActores.setText("Ver Actores");
+        jMenuVerActores.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                jMenuVerActoresActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        jMenuAccionesActores.add(jMenuVerActores);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(jMenuAccionesActores);
 
         setJMenuBar(jMenuBar1);
 
@@ -460,16 +480,17 @@ public class FramePeliculas extends javax.swing.JFrame {
         int dni = Integer.parseInt(jTextName.getText());
         String nombre = jTextApellido.getText();
         Director d = new Director(dni, nombre);
-
-        if (ctrlDirector.insert(d)) {
+/*
+        if (ctrlDirector.inserted(d,httpclient,)) {
             System.out.println("Insertado Correctamente");
         }
+        */
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void jMenuVerActoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuVerActoresActionPerformed
         dialogActores = new jDialogActor(null, true, httpclient);
         dialogActores.setVisible(true);
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_jMenuVerActoresActionPerformed
 
     private void jTextFieldUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldUsuarioActionPerformed
         // TODO add your handling code here:
@@ -480,17 +501,17 @@ public class FramePeliculas extends javax.swing.JFrame {
     }//GEN-LAST:event_jPasswordField1ActionPerformed
 
     private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
-        httpclient = HttpClients.createDefault();
         String login = jTextFieldUsuario.getText();
         String password = new String(jPasswordField1.getPassword());
 
         if (!login.isEmpty() && !password.isEmpty()) {
             Usuario user = new Usuario(login.trim(), password.trim());
 
-            if (controlUser.login(user)) {
-                httpclient = HttpClients.createDefault();
+            if (controlUser.login(user, httpclient)) {
+
                 panelVisible(jPanelPeliculas);
                 datosPeliculas();
+                jMenuAccionesActores.setVisible(true);
             } else {
                 JOptionPane.showConfirmDialog(FramePeliculas.this, "Login y/o contraseña Incorrecta", "", JOptionPane.PLAIN_MESSAGE);
             }
@@ -500,14 +521,13 @@ public class FramePeliculas extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonLoginActionPerformed
 
     private void jButtonRegistroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRegistroActionPerformed
-
         String login = jTextFieldUsuario.getText();
         String password = new String(jPasswordField1.getPassword());
         if (!login.isEmpty() && !password.isEmpty()) {
             int confirm = JOptionPane.showConfirmDialog(FramePeliculas.this, "Se va a registrar un usuario.¿Está Seguro?", "", JOptionPane.OK_CANCEL_OPTION);
             if (confirm == 0) {
                 Usuario usuario = new Usuario(login, password);
-                if (controlUser.insertUser(usuario)) {
+                if (controlUser.insertUser(usuario, httpclient)) {
                     JOptionPane.showConfirmDialog(FramePeliculas.this, "El usuario ha sido Registrado Correctamente", "", JOptionPane.PLAIN_MESSAGE);
                     clearRegister();
                 } else {
@@ -518,6 +538,21 @@ public class FramePeliculas extends javax.swing.JFrame {
             JOptionPane.showConfirmDialog(FramePeliculas.this, "Rellenar todos los datos", "", JOptionPane.PLAIN_MESSAGE);
         }
     }//GEN-LAST:event_jButtonRegistroActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        ((PeliculasModel) jTablePeliculas.getModel()).insertRow();
+        jTablePeliculas.setRowSelectionInterval(jTablePeliculas.getModel().getRowCount() - 1, jTablePeliculas.getModel().getRowCount() - 1);
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        if (jTablePeliculas.getSelectedRow() >= 0) {
+            int id = (int) jTablePeliculas.getModel().getValueAt(jTablePeliculas.getSelectedRow(), 0);
+            ctrlPeliculas.delete(id, httpclient);
+            ((PeliculasModel) jTablePeliculas.getModel()).deletePelicula(jTablePeliculas.getSelectedRow());
+        } else {
+            JOptionPane.showConfirmDialog(FramePeliculas.this, "Debe seleccionar una pelicula", "", JOptionPane.PLAIN_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     public void clearRegister() {
         jTextFieldUsuario.setText(null);
@@ -562,6 +597,8 @@ public class FramePeliculas extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButtonLogin;
     private javax.swing.JButton jButtonRegistro;
     private javax.swing.JLabel jLabel1;
@@ -571,15 +608,9 @@ public class FramePeliculas extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenuItem jMenuAlta;
+    private javax.swing.JMenu jMenuAccionesActores;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuDelete;
-    private javax.swing.JMenu jMenuExtras;
-    private javax.swing.JMenuItem jMenuInsert;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenu jMenuPelicula;
-    private javax.swing.JMenuItem jMenuUpdate;
+    private javax.swing.JMenuItem jMenuVerActores;
     private javax.swing.JPanel jPanelAltas;
     private javax.swing.JPanel jPanelLogin;
     private javax.swing.JPanel jPanelPeliculas;

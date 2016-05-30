@@ -34,9 +34,10 @@ import utilidades.PasswordHash;
  */
 public class UsuariosDAO {
 
-    public boolean insertUser(Usuario u) {
+    public boolean insertUser(Usuario u, CloseableHttpClient httpclient) {
         boolean inserted = false;
-        CloseableHttpClient httpclient = HttpClients.createDefault();
+
+        
         try {
             //Hacemos una peticion HTTP mediante el metodo POST
             HttpPost httpPost = new HttpPost("http://localhost:8080/PeliculasServidor/ServletUsuario?op=registra");
@@ -78,9 +79,8 @@ public class UsuariosDAO {
         return inserted;
     }
 
-    public boolean login(Usuario u) {
+    public boolean login(Usuario u, CloseableHttpClient httpclient) {
         boolean loginOK = false;
-        CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
             //Hacemos una peticion HTTP mediante el metodo POST
             HttpPost httpPost = new HttpPost("http://localhost:8080/PeliculasServidor/ServletUsuario?op=login");

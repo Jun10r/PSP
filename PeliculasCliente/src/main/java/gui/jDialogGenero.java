@@ -1,67 +1,40 @@
-/*
+    /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package controller;
+package gui;
 
-import gui.model.ActoresModel;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.DefaultTableModel;
+import gui.model.GenerosModel;
 import org.apache.http.impl.client.CloseableHttpClient;
 
 /**
  *
  * @author Junior
  */
-public class jDialogActor extends javax.swing.JDialog {
-
-  public static int refPelicula;
-  public ControlActor control;
-  static CloseableHttpClient httpclient;
-    public jDialogActor(java.awt.Frame parent, boolean modal,CloseableHttpClient httpclient) {
+public class jDialogGenero extends javax.swing.JDialog {
+static CloseableHttpClient httpclient;
+private static int codRef;
+    /**
+     * Creates new form jDialogGenero
+     */
+    public jDialogGenero(java.awt.Frame parent, boolean modal,CloseableHttpClient httpclient,int codRef) {
         super(parent, modal);
         initComponents();
         this.httpclient=httpclient;
-        showActors();
+        this.codRef = codRef;
+        showGeneroByMovie();
     }
-    public jDialogActor(java.awt.Frame parent, boolean modal,CloseableHttpClient httpclient,int codRef) {
+     public jDialogGenero(java.awt.Frame parent, boolean modal,CloseableHttpClient httpclient) {
         super(parent, modal);
         initComponents();
         this.httpclient=httpclient;
-        this.refPelicula = codRef;
-       showActorsByMovie();
-        
     }
-    public void showActorsByMovie(){
-     ActoresModel model = new ActoresModel(httpclient,refPelicula);
+     public void showGeneroByMovie(){
+     GenerosModel model = new GenerosModel(httpclient,codRef);
      jTable1.setModel(model);
     }
-    
-public void showActors(){
-       ActoresModel model = new ActoresModel(httpclient);
-        model.addTableModelListener(new TableModelListener() {
-            @Override
-            public void tableChanged(TableModelEvent e) {
-                switch (e.getType()) {
-                    case TableModelEvent.INSERT:
 
-                        System.out.println("I" + e.getColumn() + " " + e.getFirstRow());
-                        break;
-                    case TableModelEvent.UPDATE:
-
-                        System.out.println("U " + e.getColumn() + " " + e.getFirstRow());
-
-                        break;
-                    case TableModelEvent.DELETE:
-                        System.out.println("D" + e.getColumn() + " " + e.getFirstRow());
-                        break;
-                }
-            }
-        });
-        jTable1.setModel(model);
-}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -73,7 +46,6 @@ public void showActors(){
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -90,29 +62,21 @@ public void showActors(){
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        jLabel1.setText("ACTORES");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(149, 149, 149)
-                        .addComponent(jLabel1)))
-                .addContainerGap(15, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(15, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 11, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         pack();
@@ -135,20 +99,20 @@ public void showActors(){
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(jDialogActor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(jDialogGenero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(jDialogActor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(jDialogGenero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(jDialogActor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(jDialogGenero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(jDialogActor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(jDialogGenero.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                jDialogActor dialog = new jDialogActor(new javax.swing.JFrame(), true,httpclient);
+                jDialogGenero dialog = new jDialogGenero(new javax.swing.JFrame(), true,httpclient);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -161,7 +125,6 @@ public void showActors(){
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables

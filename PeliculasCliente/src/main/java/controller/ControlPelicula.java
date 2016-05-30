@@ -15,10 +15,28 @@ import pojos.Pelicula;
  * @author Junior
  */
 public class ControlPelicula {
-    public ArrayList<Pelicula> getAllPeliculas(CloseableHttpClient httpclient){
+
+    private PeliculaDAO peliculasDAO;
+
+    public ControlPelicula() {
+        this.peliculasDAO = new PeliculaDAO();
+    }
+
+    public ArrayList<Pelicula> getAllPeliculas(CloseableHttpClient httpclient) {
         ArrayList<Pelicula> peliculas = null;
-        PeliculaDAO peliculasDAO = new PeliculaDAO();
         peliculas = peliculasDAO.getAllPeliculas(httpclient);
         return peliculas;
+    }
+
+    public void update(Pelicula p, CloseableHttpClient httpclient) {
+        peliculasDAO.updatePeliculas(p, httpclient);
+    }
+
+    public int inserted(Pelicula p, CloseableHttpClient httpclient) {
+        return peliculasDAO.insertPelicula(p, httpclient);
+    }
+    
+    public void delete(int p, CloseableHttpClient httpclient){
+        peliculasDAO.deletePeliculas(p, httpclient);
     }
 }

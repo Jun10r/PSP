@@ -1,0 +1,305 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package gui;
+
+import constantes.Constantes;
+import controller.ControlActor;
+import gui.model.ActoresModel;
+import java.util.ArrayList;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
+import org.apache.http.impl.client.CloseableHttpClient;
+import pojos.Actor;
+
+/**
+ *
+ * @author Junior
+ */
+public class jDialogActor extends javax.swing.JDialog {
+
+    public static int refPelicula;
+    public ControlActor control = new ControlActor();
+    static CloseableHttpClient httpclient;
+    private boolean actorGeneral=false;
+
+    public jDialogActor(java.awt.Frame parent, boolean modal, CloseableHttpClient httpclient) {
+        super(parent, modal);
+        initComponents();
+         
+        this.httpclient = httpclient;
+         actorGeneral = true;
+        showActors();
+    }
+
+    public jDialogActor(java.awt.Frame parent, boolean modal, CloseableHttpClient httpclient, int codRef) {
+        super(parent, modal);
+        initComponents();
+        
+        this.httpclient = httpclient;
+        this.refPelicula = codRef;
+        actorGeneral = false;
+        showActorsByMovie();
+
+    }
+
+    public void datosActores(ActoresModel model, TableModelEvent e) {
+        if (((ActoresModel) jTable1.getModel()).isInsertando()) {
+            ((ActoresModel) jTable1.getModel()).insert_true(
+                    (Integer) jTable1.getModel().getValueAt(e.getFirstRow(), Constantes.COLUMN_DNI_ACTORES),
+                    (String) jTable1.getModel().getValueAt(e.getFirstRow(), Constantes.COLUMN_NOMBRE_ACTORES));
+
+            if (!((ActoresModel) jTable1.getModel()).isInsertando()) {
+
+                if (actorGeneral) {
+                    Actor p = ((ActoresModel) jTable1.getModel()).getActoresAtRow(e.getFirstRow());
+                    control.inserted(p, httpclient);
+                    ((ActoresModel) jTable1.getModel()).setActoresLasId(p);
+                } else {
+                    Actor p = ((ActoresModel) jTable1.getModel()).getActoresAtRow(e.getFirstRow());
+                    control.insertActuan(p, refPelicula, httpclient);
+                    ((ActoresModel) jTable1.getModel()).setActoresLasId(p);
+                }
+            }
+        } else {
+            Actor p = ((ActoresModel) jTable1.getModel()).getActoresAtRow(e.getFirstRow());
+            control.update(p, httpclient);
+        }
+    }
+
+    public void showActorsByMovie() {
+        ActoresModel model = new ActoresModel(httpclient, refPelicula);
+        model.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                switch (e.getType()) {
+                    case TableModelEvent.INSERT:
+
+                        System.out.println("I" + e.getColumn() + " " + e.getFirstRow());
+                        break;
+                    case TableModelEvent.UPDATE:
+
+                        System.out.println("U " + e.getColumn() + " " + e.getFirstRow());
+
+                        datosActores(model, e);
+                        break;
+                    case TableModelEvent.DELETE:
+                        System.out.println("D" + e.getColumn() + " " + e.getFirstRow());
+                        break;
+                }
+            }
+        });
+        jTable1.setModel(model);
+        rellenarCombo();
+    }
+
+    public void showActors() {
+        ActoresModel model = new ActoresModel(httpclient);
+        model.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                switch (e.getType()) {
+                    case TableModelEvent.INSERT:
+
+                        System.out.println("I" + e.getColumn() + " " + e.getFirstRow());
+                        break;
+                    case TableModelEvent.UPDATE:
+                        System.out.println("U " + e.getColumn() + " " + e.getFirstRow());
+                        datosActores(model, e);
+                        break;
+                    case TableModelEvent.DELETE:
+                        System.out.println("D" + e.getColumn() + " " + e.getFirstRow());
+                        break;
+                }
+            }
+        });
+        jTable1.setModel(model);
+        jButtonAddActores.setVisible(false);
+        jComboBoxActores.setVisible(false);
+    }
+
+    public void rellenarCombo() {
+        ArrayList<Actor> actores = control.getAllActors(httpclient);
+        for (Actor actore : actores) {
+            jComboBoxActores.addItem(actore.getNombre());
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jComboBoxActores = new javax.swing.JComboBox<>();
+        jButtonAddActores = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
+
+        jLabel1.setText("ACTORES");
+
+        jButton1.setText("Insertar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("Borrar");
+
+        jComboBoxActores.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecciona Actor..." }));
+        jComboBoxActores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxActoresActionPerformed(evt);
+            }
+        });
+
+        jButtonAddActores.setText("Añadir Actores");
+        jButtonAddActores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAddActoresActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(149, 149, 149)
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jButton1)
+                        .addGap(31, 31, 31)
+                        .addComponent(jButton2)))
+                .addContainerGap(15, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(66, 66, 66)
+                .addComponent(jComboBoxActores, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButtonAddActores)
+                .addGap(48, 48, 48))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 10, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jComboBoxActores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButtonAddActores))
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2)
+                    .addComponent(jButton1))
+                .addGap(47, 47, 47))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        ((ActoresModel) jTable1.getModel()).insertRow();
+        jTable1.setRowSelectionInterval(jTable1.getModel().getRowCount() - 1, jTable1.getModel().getRowCount() - 1);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButtonAddActoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActoresActionPerformed
+
+        String actor = ((String) jComboBoxActores.getSelectedItem()).trim();
+        Actor a = control.getActor(httpclient, actor.trim());
+        System.out.println(a.toString());
+
+        ((ActoresModel) jTable1.getModel()).insertActor(a);
+        jTable1.setRowSelectionInterval(jTable1.getModel().getRowCount() - 1, jTable1.getModel().getRowCount() - 1);
+
+    }//GEN-LAST:event_jButtonAddActoresActionPerformed
+
+    private void jComboBoxActoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxActoresActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBoxActoresActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(jDialogActor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(jDialogActor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(jDialogActor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(jDialogActor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the dialog */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                jDialogActor dialog = new jDialogActor(new javax.swing.JFrame(), true, httpclient);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButtonAddActores;
+    private javax.swing.JComboBox<String> jComboBoxActores;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
+    // End of variables declaration//GEN-END:variables
+}

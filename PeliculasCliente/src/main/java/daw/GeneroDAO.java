@@ -21,6 +21,7 @@ import pojos.Actor;
 import pojos.Genero;
 import utilidades.ConstantesClaves;
 import static utilidades.ConstantesClaves.CLAVE_GENEROS;
+import static utilidades.ConstantesClaves.CLAVE_OBJECT;
 import utilidades.PasswordHash;
 
 /**
@@ -41,7 +42,7 @@ public class GeneroDAO {
             //Desencriptando
             ObjectMapper mapper = new ObjectMapper();
             byte[] b64p = Base64.decodeBase64(c);
-            actores = mapper.readValue(PasswordHash.descifra(b64p, CLAVE_GENEROS), new TypeReference<ArrayList<Genero>>() {
+            actores = mapper.readValue(PasswordHash.descifra(b64p, CLAVE_OBJECT), new TypeReference<ArrayList<Genero>>() {
             });
         } catch (Exception e) {
         } finally {
