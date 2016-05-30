@@ -44,7 +44,8 @@ public class ServletGenero extends HttpServlet {
             switch(op){
                 case "getGenero":
                      String codRef = request.getParameter("codRef");
-                    try {
+                     request.setAttribute("send", sg.getAllGeneroByMovie(Integer.parseInt(codRef)));
+                    /*try {
                         ObjectMapper mapper = new ObjectMapper();
                         String peliculasJson = mapper.writeValueAsString(sg.getAllGeneroByMovie(Integer.parseInt(codRef)));
                         byte[] bytes = PasswordHash.cifra(peliculasJson, CLAVE_GENEROS);
@@ -56,7 +57,7 @@ public class ServletGenero extends HttpServlet {
 
                     } catch (Exception ex) {
                         Logger.getLogger(ServletPelicula.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    }*/
                     break;
             }
         }

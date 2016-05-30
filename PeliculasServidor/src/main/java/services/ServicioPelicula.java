@@ -14,11 +14,28 @@ import pojos.Pelicula;
  * @author Junior
  */
 public class ServicioPelicula {
-    
-    public ArrayList<Pelicula> getAllPeliculas(){
+
+    private final PeliculaDAO pelisDAO;
+
+    public ServicioPelicula() {
+        this.pelisDAO = new PeliculaDAO();
+    }
+
+    public ArrayList<Pelicula> getAllPeliculas() {
         ArrayList<Pelicula> peliculas = null;
-        PeliculaDAO pelisDAO = new PeliculaDAO();
         peliculas = pelisDAO.getAllPeliculas();
         return peliculas;
+    }
+
+    public void update(Pelicula p) {
+        pelisDAO.updatePelicula(p);
+    }
+
+    public int inserted(Pelicula p) {
+        return pelisDAO.insertPelicula(p);
+    }
+    
+    public void delete(int l){
+        pelisDAO.deletePelicula(l);
     }
 }

@@ -5,6 +5,7 @@
  */
 package controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,8 +16,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
+import pojos.Actor;
 import services.ServicioActor;
+import utilidades.ConstantesClaves;
 import static utilidades.ConstantesClaves.CLAVE_ACTORES;
+import static utilidades.ConstantesClaves.CLAVE_OBJECT;
+import static utilidades.ConstantesClaves.PARAMETRO_ACTORES;
+import static utilidades.ConstantesClaves.PARAMETRO_POST;
 import utilidades.PasswordHash;
 
 /**
@@ -41,31 +47,30 @@ public class ServletActor extends HttpServlet {
         if (op != null) {
             switch (op) {
                 case "get":
-                    try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        String peliculasJson = mapper.writeValueAsString(sa.getAllActors());
-                        byte[] bytes = PasswordHash.cifra(peliculasJson, "claveActores");
-                        String peliculaBase64 = new String(Base64.encodeBase64(bytes));
-                        mapper.writeValue(response.getOutputStream(), peliculaBase64);
-                    } catch (IOException ex) {
+                    request.setAttribute("send", sa.getAllActors());
+                    break;
+                case "getMovie":
 
-                    } catch (Exception ex) {
-                        Logger.getLogger(ServletPelicula.class.getName()).log(Level.SEVERE, null, ex);
+                    String codRef = request.getParameter("codRef");
+                    request.setAttribute("send", sa.getAllActorsByMovie(Integer.parseInt(codRef)));
+                    break;
+                case "getActor":
+                    String name = request.getParameter("name");
+                    request.setAttribute("send", sa.getActor(name));
+                    break;
+                case "insert":
+                    //String id = request.getParameter("id");
+                    Actor a = (Actor) request.getAttribute("request");
+                    if (sa.inserted(a)) {
+                        response.getWriter().print("OK");
                     }
                     break;
-                     case "getMovie":
-                         String codRef = request.getParameter("codRef");
-                    try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        String peliculasJson = mapper.writeValueAsString(sa.getAllActorsByMovie(Integer.parseInt(codRef)));
-                        byte[] bytes = PasswordHash.cifra(peliculasJson, CLAVE_ACTORES);
-                        String peliculaBase64 = new String(Base64.encodeBase64(bytes));
-                        mapper.writeValue(response.getOutputStream(), peliculaBase64);
-                    
-                    } catch (IOException ex) {
+                case "insertActuan":
+                    String peli = request.getParameter("id");
+                    Actor aInsertActuan = (Actor) request.getAttribute("request");
 
-                    } catch (Exception ex) {
-                        Logger.getLogger(ServletPelicula.class.getName()).log(Level.SEVERE, null, ex);
+                    if (sa.insertActuan(aInsertActuan, Integer.parseInt(peli))) {
+                        response.getWriter().print("OK");
                     }
                     break;
             }

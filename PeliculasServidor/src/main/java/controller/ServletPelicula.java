@@ -5,6 +5,7 @@
  */
 package controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,6 +21,7 @@ import pojos.Pelicula;
 import services.ServicioPelicula;
 import utilidades.ConstantesClaves;
 import static utilidades.ConstantesClaves.CLAVE_PELICULAS;
+import static utilidades.ConstantesClaves.PARAMETRO_POST;
 import utilidades.PasswordHash;
 
 /**
@@ -41,25 +43,36 @@ public class ServletPelicula extends HttpServlet {
             throws ServletException, IOException {
         String op = request.getParameter("op");
         ServicioPelicula sp = new ServicioPelicula();
+
         if (op != null) {
             switch (op) {
                 case "get":
-                    try {
-                        ObjectMapper mapper = new ObjectMapper();
-                        String peliculasJson = mapper.writeValueAsString(sp.getAllPeliculas());
-                        byte[] bytes = PasswordHash.cifra(peliculasJson, CLAVE_PELICULAS);
-                        String peliculaBase64 = new String(Base64.encodeBase64(bytes));
-                        mapper.writeValue(response.getOutputStream(), peliculaBase64);
-                    } catch (IOException ex) {
-                    } catch (Exception ex) {
-                        Logger.getLogger(ServletPelicula.class.getName()).log(Level.SEVERE, null, ex);
+                    request.setAttribute("send", sp.getAllPeliculas());
+                   // response.getWriter().print(request.getAttribute("cifrado"));
+                    break;
+                case "update":
+                    Pelicula pelicula = (Pelicula) request.getAttribute("request");
+                    sp.update(pelicula);
+                    break;
+                case "insert":
+                    
+                    Pelicula pInsert = (Pelicula) request.getAttribute("request");
+                    int id = sp.inserted(pInsert);
+                    if (id!=0) {
+                        response.getWriter().print(id);
                     }
+                   
+                    break;
+                case "delete":
+                    int p = (Integer) request.getAttribute("requestdelete");
+                    sp.delete(p);
+                    break;
             }
         }
 
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

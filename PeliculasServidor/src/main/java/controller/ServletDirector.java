@@ -16,8 +16,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
+import pojos.Actor;
 import pojos.Director;
 import services.ServicioDirector;
+import static utilidades.ConstantesClaves.CLAVE_ACTORES;
+import static utilidades.ConstantesClaves.PARAMETRO_POST;
 import utilidades.PasswordHash;
 
 /**
@@ -49,22 +52,29 @@ public class ServletDirector extends HttpServlet {
         // Director d = new Director("junior", "Lizama");
         if (op != null) {
             switch (op) {
+                case "get":
+                    request.setAttribute("send", sd.getAllDirectores());
+                    break;
+                case "getMovie":
+                    String codRef = request.getParameter("codRef");
+                    request.setAttribute("send", sd.getAllDirectoresByMovie(Integer.parseInt(codRef)));
+                    break;
                 case "insert":
+                    /*
+                    String id = request.getParameter("id");
+                    ObjectMapper mapinsert = new ObjectMapper();
+                    byte[] b64a = Base64.decodeBase64(request.getParameter(PARAMETRO_POST).getBytes("UTF-8"));
                     try {
-                        ObjectMapper mapinsert = new ObjectMapper();
-                        byte[] b64a = Base64.decodeBase64(request.getParameter("userInsert").getBytes("UTF-8"));
-                        Director d;
-                        d = mapinsert.readValue(
-                                PasswordHash.descifra(b64a, "clave"),
-                                new TypeReference<Director>() {
+                        Actor a = mapinsert.readValue(PasswordHash.descifra(b64a, CLAVE_ACTORES), new TypeReference<Actor>() {
                         });
-                        if (sd.insertDirector(d)) {
-                            response.getWriter().print("TRUE");
+                        if (sd.inserted(a,Integer.parseInt(id))) {
+                            response.getWriter().print("OK");
                         }
-                    } catch (Exception ex) {
-                        Logger.getLogger(ServletDirector.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception e) {
+                        Logger.getLogger(ServletPelicula.class.getName()).log(Level.SEVERE, null, e);
                     }
-                    
+                    */
+                    break;
 
             }
         }

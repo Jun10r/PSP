@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <filter>
+        <filter-name>FilterLogin</filter-name>
+        <filter-class>filtros.FilterLogin</filter-class>
+    </filter>
+    <filter>
+        <filter-name>FilterJson</filter-name>
+        <filter-class>filtros.FilterJson</filter-class>
+    </filter>
+    <filter-mapping>
+        <!-- AÑADIR MAS URL PATTERN PARA ACTORES Y DIRECTORES Y GENERO-->
+        <filter-name>FilterJson</filter-name>
+        <url-pattern>/ServletPelicula</url-pattern>
+        <url-pattern>/ServletActor</url-pattern>
+        <url-pattern>/ServletGenero</url-pattern>
+        <url-pattern>/ServletDirector</url-pattern>
+        
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>FilterLogin</filter-name>
+        <url-pattern>/ServletPelicula</url-pattern>
+        
+        
+    </filter-mapping>
     <listener>
         <description>ServletContextListener</description>
         <listener-class>controller.Listener</listener-class>

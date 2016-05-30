@@ -6,6 +6,7 @@
 package services;
 
 import daos.DirectorDAO;
+import java.util.ArrayList;
 import pojos.Director;
 
 /**
@@ -13,9 +14,23 @@ import pojos.Director;
  * @author Junior
  */
 public class ServicioDirector {
+    private final DirectorDAO directorDAO;
+
+    public ServicioDirector() {
+        this.directorDAO = new DirectorDAO();
+    }
     
-    public boolean insertDirector(Director d){
-        DirectorDAO directorDAO = new DirectorDAO();
-        return directorDAO.insertDirector(d);
+    public ArrayList<Director> getAllDirectores(){
+        ArrayList<Director> directores= null;
+        directores = directorDAO.getAllDirector();
+        return directores;
+    }
+    public ArrayList<Director> getAllDirectoresByMovie(int codRef){
+        ArrayList<Director> directores = null;
+        directores = directorDAO.getAllDirectoresByMovie(codRef);
+        return directores;
+    }
+    public boolean insertDirector(Director d,int idPelicula){
+       return directorDAO.insertDirector(d, idPelicula);
     }
 }
