@@ -13,16 +13,14 @@ public class Pelicula {
     private int n_referencia;
     private String titulo;
     private int calificacion;
-    private int cod_director;
 
     public Pelicula() {
     }
 
-    public Pelicula(int n_referencia, String titulo, int calificacion, int cod_director) {
+    public Pelicula(int n_referencia, String titulo, int calificacion) {
         this.n_referencia = n_referencia;
         this.titulo = titulo;
         this.calificacion = calificacion;
-        this.cod_director = cod_director;
     }
 
     public int getN_referencia() {
@@ -49,17 +47,9 @@ public class Pelicula {
         this.calificacion = calificacion;
     }
 
-    public int getCod_director() {
-        return cod_director;
-    }
-
-    public void setCod_director(int cod_director) {
-        this.cod_director = cod_director;
-    }
-
     @Override
     public String toString() {
-        return "Pelicula{" + "n_referencia=" + n_referencia + ", titulo=" + titulo + ", calificacion=" + calificacion + ", cod_director=" + cod_director + '}';
+        return "Pelicula{" + "n_referencia=" + n_referencia + ", titulo=" + titulo + ", calificacion=" + calificacion + "}";
     }
 
  
